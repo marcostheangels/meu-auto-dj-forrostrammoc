@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Rádio Web - AutoDJ</title>
+    <style>
+        body { background: #121212; color: white; font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        .player-container { background: #1e1e1e; max-width: 400px; margin: 0 auto; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h1 { font-size: 24px; color: #00ff88; }
+        #status { color: #888; margin-bottom: 20px; }
+        audio { width: 100%; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="player-container">
+    <h1>🔴 RÁDIO AO VIVO</h1>
+    <p id="status">Carregando programação...</p>
+    <audio id="audioPlayer" controls autoplay></audio>
+</div>
+
+<script>
+    const player = document.getElementById('audioPlayer');
+    const statusText = document.getElementById('status');
+    let playlist = [];
+    let currentIndex = 0;
+
+    fetch('playlist.json')
+        .then(response => response.json())
+        .then(data => {
+            playlist = data;
+            if(playlist.length > 0) {
+                playlist.sort(() => Math.random() - 0.5); // Embaralha
+                tocarMusica(0);
+            } else {
+                statusText.innerText = "Nenhuma música encontrada.";
+            }
+        })
+        .catch(err => {
+            statusText.innerText = "Erro ao carregar a programação.";
+        });
+
+    function tocarMusica(index) {
+        currentIndex = index;
+        const musicaAtual = playlist[currentIndex];
+        player.src = musicaAtual; // Pega o arquivo direto da raiz do GitHub
+        player.play().catch(e => {
+            statusText.innerText = "Clique no Play para ouvir a rádio";
+        });
+        statusText.innerText = "Tocando agora: " + musicaAtual.replace('.mp3', '').replace(/_/g, ' ');
+    }
+
+    player.addEventListener('ended', () => {
+        let proximoIndex = currentIndex + 1;
+        if(proximoIndex >= playlist.length) {
+            proximoIndex = 0;
+            playlist.sort(() => Math.random() - 0.5);
+        }
+        tocarMusica(proximoIndex);
+    });
+</script>
+
+</body>
+</html>
