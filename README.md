@@ -1,2 +1,2 @@
 # meu-auto-dj-forrostrammoc
-auto-dj-forrostreammoc
+Teste do playerauto-dj-forrostreammoc
